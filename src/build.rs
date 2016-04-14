@@ -1,4 +1,6 @@
-use std::process::*;
+use std::fs::File;
+use std::io::Write;
+use command::build_and_run;
 
 pub struct Builder<'a> {
     code: &'a str,
@@ -10,37 +12,15 @@ impl<'a> Builder<'a> {
         Builder { code: code, lang: lang }
     }
 
-    pub fn build(&self) -> Result<(), String> {
-        try!(self.build_builder());
-        try!(self.run_builder());
-        Ok(())
-    }
-
-    fn build_builder(&self) -> Result<(), String> {
-        let script_path = "conf/build/".to_string() + self.lang + "/build";
-        let default_script_path = "conf/build/common/build";
-
-        let output = Command::new(script_path)
-                        .output()
-                        .unwrap_or(Command::new(default_script_path).output().unwrap());
-        if output.status.success() {
-            Ok(())
+    pub fn build(&self, target: &str) -> Result<(), String> {
+        if let Ok(mut f) = File::create("solution") {
+            if let Err(e) = f.write_all(self.code.as_bytes()) {
+                return Err(e.to_string());
+            }
         } else {
-            Err(String::from_utf8(output.stdout).unwrap())
+            return Err("can't create solution file".to_string());
         }
-    }
 
-    fn run_builder(&self) -> Result<(), String> {
-        let script_path = "conf/build/".to_string() + self.lang + "/run";
-        let default_script_path = "conf/build/common/run";
-
-        let output = Command::new(script_path)
-                        .output()
-                        .unwrap_or(Command::new(default_script_path).output().unwrap());
-        if output.status.success() {
-            Ok(())
-        } else {
-            Err(String::from_utf8(output.stdout).unwrap())
-        }
+        build_and_run("../conf/build/", self.lang, &[], &[target, "solution"])
     }
 }

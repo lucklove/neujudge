@@ -6,3 +6,5 @@ authors = ["Jos <gnu.crazier@gmail.com>"]
 [dependencies]
 rustc-serialize = "0.3"
 iron = "*"
+router = "*"
+libc = "*"

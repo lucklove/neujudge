@@ -1,2 +1,2 @@
-#! /bin/sh
-echo "hello"
+#!/bin/sh
+# nothing to compile

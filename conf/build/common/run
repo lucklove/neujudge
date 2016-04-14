@@ -1,1 +1,3 @@
-#! /bin/sh
+#!/bin/sh
+echo "Not suppurt this language temporarily"
+exit -1
